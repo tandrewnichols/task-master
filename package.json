@@ -1,0 +1,42 @@
+{
+  "name": "task-master",
+  "description": "A helper to make Grunt task declaration and organization cleaner.",
+  "version": "0.0.1",
+  "author": "Andrew Nichols <tandrewnichols@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/tandrewnichols/task-manager.git"
+  },
+  "homepage": "https://github.com/tandrewnichols/task-manager",
+  "bugs": {
+    "url": "https://github.com/tandrewnichols/task-manager/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/tandrewnichols/task-manager/blob/master/LICENSE"
+    }
+  ],
+  "scripts": {
+    "test": "mocha 'test/**/*.coffee'",
+    "watch": "mocha 'test/**/*.coffee' -w -R min --suppress-stack"
+  },
+  "dependencies": {
+    "file-manifest": "~0.0.4"
+  },
+  "devDependencies": {
+    "coffee-script": "1.7.1",
+    "mocha": "git://github.com/tandrewnichols/mocha.git#suppress-stack",
+    "proxyquire": "0.5.3",
+    "sinon": "1.7.3",
+    "mocha-given": "0.0.18",
+    "indeed": "1.0.5"
+  },
+  "keywords": [
+    "grunt",
+    "gruntfile",
+    "tasks",
+    "task management"
+  ],
+  "main": "./task-manager"
+}
