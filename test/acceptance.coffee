@@ -2,8 +2,17 @@ cp = require 'child_process'
 fs = require 'fs'
 
 describe 'Acceptance test', ->
-  afterEach -> console.log.restore()
-  Given -> sinon.spy console, 'log'
-  When (done) -> cp.exec 'grunt foo', done
-  Then -> expect(console.log).to.have.been.calledWith 'bar task executed'
-  And -> expect(console.log).to.have.been.calledWith 'baz task executed'
+  afterEach (done) -> cp.exec 'rm -r tasks', done
+  afterEach (done) -> cp.exec 'rm Gruntfile.js', done
+  Given (done) -> cp.exec 'cp -r tasks ../tasks', { cwd: __dirname, stdio: 'inherit' }, done
+  Given (done) -> cp.exec 'cp Gruntfile.js ../Gruntfile.js', { cwd: __dirname, stdio: 'inherit' }, done
+  When (done) -> cp.exec 'grunt foo', { stdio: 'inherit' }, (err, stdout) =>
+    @output = stdout
+    done()
+  Then ->
+    expect(@output).to.contain 'Running "bar" task'
+    expect(@output).to.contain 'Done, without errors'
+  And ->
+    expect(@output).to.contain 'Running "baz" task'
+    expect(@output).to.contain 'Done, without errors'
+  And -> expect(@output).to.contain 'quux'

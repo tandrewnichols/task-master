@@ -1,3 +1,3 @@
 module.exports = {
-  test: "baz task executed"
+  test: "quux"
 };

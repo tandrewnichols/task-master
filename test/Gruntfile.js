@@ -1,10 +1,9 @@
-var taskMaster = require('task-master');
+var taskMaster = require('./task-master');
 
 module.exports = function(grunt) {
   taskMaster(grunt);
   grunt.registerTask('baz', function() {
-    console.log('data', this.data);
-    console.log(this.data.test);
+    console.log(grunt.config.get());
   });
   grunt.registerTask('foo', ['bar', 'baz']);
 };
