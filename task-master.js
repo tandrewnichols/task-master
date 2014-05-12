@@ -1,5 +1,4 @@
 var fm = require('file-manifest'),
-    _ = require('underscore'),
     path = require('path');
 
 module.exports = function(grunt) {

@@ -1,4 +1,3 @@
-path = require 'path'
 describe 'task-master', ->
   Given -> @fm = {}
   Given -> @subject = sandbox '../task-master',

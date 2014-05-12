@@ -1,5 +1,4 @@
 cp = require 'child_process'
-fs = require 'fs'
 
 describe 'Acceptance test', ->
   afterEach (done) -> cp.exec 'rm -r tasks', done
@@ -10,11 +9,12 @@ describe 'Acceptance test', ->
   describe 'existing task', ->
     When (done) -> cp.exec 'grunt', (err, stdout) =>
       @output = stdout
+      #console.log @output
       done()
     Then ->
       expect(@output).to.contain('Running "jshint:default" (jshint) task') and
       expect(@output).to.contain('task-master.js') and
-      expect(@output).to.contain('10 |') and
+      expect(@output).to.contain('9 |') and
       expect(@output).to.contain("Expected '{' and instead saw 'manifest'") and
       expect(@output).to.contain('1 error in 1 file') and
       expect(@output).to.contain('Warning: Task "jshint:default" failed.') and

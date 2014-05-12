@@ -22,8 +22,7 @@
     "watch": "mocha 'test/**/*.coffee' -w -R min --suppress-stack"
   },
   "dependencies": {
-    "file-manifest": "~0.0.4",
-    "underscore": "~1.6.0"
+    "file-manifest": "~0.0.4"
   },
   "devDependencies": {
     "coffee-script": "1.7.1",
@@ -40,7 +39,9 @@
     "grunt",
     "gruntfile",
     "tasks",
-    "task management"
+    "task management",
+    "configuration",
+    "abstraction"
   ],
   "main": "./task-manager"
 }
