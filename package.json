@@ -33,6 +33,7 @@
     "mocha-given": "0.0.18",
     "indeed": "1.0.5",
     "grunt": "0.4.4",
+    "grunt-contrib-jshint": "0.10.0",
     "colors": "0.6.2"
   },
   "keywords": [

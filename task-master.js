@@ -3,17 +3,11 @@ var fm = require('file-manifest'),
     path = require('path');
 
 module.exports = function(grunt) {
-  var tasks = fm.generate(__dirname + '/tasks', function(manifest, file) {
-    manifest[path.basename(file, path.extname(file))] = require(file);
+  return fm.generate(__dirname + '/tasks', function(manifest, file) {
+    var req = require(file);
+    var name = path.basename(file, path.extname(file));
+    var config = typeof req === 'function' ? req(grunt) : req;
+    if (config) manifest[name] = config;
     return manifest;
-  });
-  _.chain(tasks).keys().each(function(task) {
-    if (typeof tasks[task] === 'function') {
-      tasks[task](grunt);
-    } else {
-      var obj = {};
-      obj[task] = tasks[task];
-      grunt.initConfig(obj);
-    }
   });
 };

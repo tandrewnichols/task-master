@@ -1,3 +1,3 @@
 module.exports = {
-  test: "quux"
+  msg: "Did some baz stuff"
 };
