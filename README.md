@@ -34,7 +34,8 @@ module.exports = {
   options: {
     curly: true,
     eqeqeq: true
-  }
+  },
+  'default': '**/*.js'
 };
 ```
 
