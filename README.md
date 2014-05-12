@@ -82,3 +82,11 @@ module.exports = function(grunt) {
   // register other tasks (like default) etc.
 };
 ```
+
+## Running tests
+
+`npm install`
+
+`npm install mocha -g`
+
+`npm test`
