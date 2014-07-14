@@ -22,7 +22,7 @@
     "watch": "mocha 'test/**/*.coffee' -w -R min --suppress-stack"
   },
   "dependencies": {
-    "file-manifest": "~0.0.4"
+    "file-manifest": "~0.0.7"
   },
   "devDependencies": {
     "coffee-script": "1.7.1",
