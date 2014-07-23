@@ -69,7 +69,7 @@ module.exports = function(grunt) {
 };
 ```
 
-Step 3: Call task-master from your Gruntfile and pass it `grunt`.
+Step 3: Call task-master from your Gruntfile and pass it `grunt`. No need to call `initConfig` or `loadNpmTasks` as task-master does both for you. It will automatically load any plugins specified in package.json under devDependencies that begin with 'grunt-' (as that is the paradigm for publishing grunt tasks).
 
 Gruntfile.js
 
@@ -77,13 +77,17 @@ Gruntfile.js
 var taskMaster = require('task-master');
 
 module.exports = function(grunt) {
-  grunt.initConfig(taskMaster(grunt));
+  taskMaster(grunt);
   
   // register other tasks (like default) etc.
 };
 ```
 
 ## Running tests
+
+`git clone git@github.com:tandrewnichols/task-master.git`
+
+`cd task-master`
 
 `npm install`
 

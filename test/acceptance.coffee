@@ -14,15 +14,20 @@ describe 'Acceptance test', ->
     Then ->
       expect(@output).to.contain('Running "jshint:default" (jshint) task') and
       expect(@output).to.contain('task-master.js') and
-      expect(@output).to.contain('9 |') and
+      expect(@output).to.contain('11 |') and
+      expect(@output).to.contain("Expected '{' and instead saw 'tasks'") and
+      expect(@output).to.contain('16 |') and
+      expect(@output).to.contain("Expected '{' and instead saw 'grunt'") and
+      expect(@output).to.contain('23 |') and
       expect(@output).to.contain("Expected '{' and instead saw 'manifest'") and
-      expect(@output).to.contain('1 error in 1 file') and
+      expect(@output).to.contain('3 errors in 1 file') and
       expect(@output).to.contain('Warning: Task "jshint:default" failed.') and
       expect(@output).to.contain 'Aborted due to warnings'
 
   describe 'regular tasks', ->
     When (done) -> cp.exec 'grunt foo', (err, stdout) =>
       @output = stdout
+      #console.log @output
       done()
     Then ->
       expect(@output).to.contain('Running "bar" task') and
@@ -35,6 +40,7 @@ describe 'Acceptance test', ->
   describe 'multi task run with target', ->
     When (done) -> cp.exec 'grunt log:foo', (err, stdout) =>
       @output = stdout
+      #console.log @output
       done()
     Then ->
       expect(@output).to.contain('Running "log:foo" (log) task') and

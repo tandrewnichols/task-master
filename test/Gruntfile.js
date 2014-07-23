@@ -1,8 +1,7 @@
 var taskMaster = require('./task-master');
 
 module.exports = function(grunt) {
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.initConfig(taskMaster(grunt));
+  taskMaster(grunt);
   grunt.registerTask('baz', function() {
     grunt.log.writeln(grunt.config('baz').msg);
   });
