@@ -1,7 +1,7 @@
 {
   "name": "task-master",
   "description": "A helper to make Grunt task declaration and organization cleaner.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Andrew Nichols <tandrewnichols@gmail.com>",
   "repository": {
     "type": "git",
