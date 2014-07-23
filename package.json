@@ -43,5 +43,5 @@
     "configuration",
     "abstraction"
   ],
-  "main": "./task-manager"
+  "main": "./task-master"
 }
