@@ -1,4 +1,7 @@
 describe 'task-master', ->
+  afterEach -> process.cwd.restore()
+  Given -> sinon.stub process, 'cwd'
+  Given -> process.cwd.returns '.'
   Given -> @fm = {}
   Given -> @subject = sandbox '../task-master',
     'file-manifest': @fm
