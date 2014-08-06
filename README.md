@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/tandrewnichols/task-master.png)](https://travis-ci.org/tandrewnichols/task-master) [![downloads](http://img.shields.io/npm/dm/task-master.svg)](https://npmjs.org/package/task-master) [![npm](http://img.shields.io/npm/v/task-master.svg)](https://npmjs.org/package/task-master)
+[![Build Status](https://travis-ci.org/tandrewnichols/task-master.png)](https://travis-ci.org/tandrewnichols/task-master) [![downloads](http://img.shields.io/npm/dm/task-master.svg)](https://npmjs.org/package/task-master) [![npm](http://img.shields.io/npm/v/task-master.svg)](https://npmjs.org/package/task-master) [![Code Climate](https://codeclimate.com/github/tandrewnichols/task-master/badges/gpa.svg)](https://codeclimate.com/github/tandrewnichols/task-master)
 
 # task-master
 
