@@ -13,15 +13,11 @@ module.exports = function(grunt) {
   }
 
   // Get all npm grunt related modules
-  var tasks = [];
   if (pkg && pkg.devDependencies) {
     for (var dep in pkg.devDependencies) {
-      if (dep.indexOf('grunt-') === 0) tasks.push(dep);
+      if (dep.indexOf('grunt-') === 0) grunt.loadNpmTasks(dep);
     }
   }
-
-  // Load those tasks
-  if (tasks.length) grunt.loadNpmTasks.apply(grunt, tasks);
 
   // Build a grunt config from the tasks directory
   var config = fm.generate(root + '/tasks', function(manifest, file) {
