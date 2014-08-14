@@ -1,8 +1,14 @@
 cp = require 'child_process'
 
 describe 'Acceptance test', ->
+  afterEach (done) -> cp.exec 'rm -r tasks', done
+  afterEach (done) -> cp.exec 'rm Gruntfile.js', done
+  Given (done) -> cp.exec 'cp -r tasks ../tasks', { cwd: __dirname, stdio: 'inherit' }, done
+  Given (done) -> cp.exec 'cp Gruntfile.js ../Gruntfile.js', { cwd: __dirname, stdio: 'inherit' }, done
+
   describe 'existing task', ->
-    When (done) -> cp.exec 'grunt --gruntfile test/Gruntfile.js --base ./', (err, @output) =>
+    When (done) -> cp.exec 'grunt', (err, stdout) =>
+      @output = stdout
       # Comment in to debug
       #console.log @output
       done()
@@ -18,8 +24,8 @@ describe 'Acceptance test', ->
       expect(@output).to.contain 'Aborted due to warnings'
 
   describe 'regular tasks', ->
-    When (done) -> cp.exec 'grunt --gruntfile test/Gruntfile.js --base ./ foo', (err, @output) =>
-      # Comment in to debug
+    When (done) -> cp.exec 'grunt foo', (err, stdout) =>
+      @output = stdout
       #console.log @output
       done()
     Then ->
@@ -31,8 +37,8 @@ describe 'Acceptance test', ->
       expect(@output).to.contain 'Done, without errors'
 
   describe 'multi task run with target', ->
-    When (done) -> cp.exec 'grunt --gruntfile test/Gruntfile.js --base ./ log:foo', (err, @output) =>
-      # Comment in to debug
+    When (done) -> cp.exec 'grunt log:foo', (err, stdout) =>
+      @output = stdout
       #console.log @output
       done()
     Then ->
