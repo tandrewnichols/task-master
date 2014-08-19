@@ -73,13 +73,26 @@ Step 3: Call task-master from your Gruntfile and pass it `grunt`. No need to cal
 
 Gruntfile.js
 
-```
+```javascript
 var taskMaster = require('task-master');
 
 module.exports = function(grunt) {
   taskMaster(grunt);
   
   // register other tasks (like default) etc.
+};
+```
+
+By default task-master reads your devDependencies looking for grunt plugins, but you can make it look it in your regular dependencies as well by passing an optional configuration object.
+
+```javascript
+var taskMaster = require('task-master');
+
+module.exports = function(grunt) {
+  taskMaster(grunt, {
+    production: true, // Look in "dependencies" - default: false
+    development: false // Don't look in "devDependencies" - default: true
+  });
 };
 ```
 
