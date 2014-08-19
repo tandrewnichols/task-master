@@ -22,7 +22,8 @@
     "watch": "mocha 'test/**/*.coffee' -w -R min --suppress-stack"
   },
   "dependencies": {
-    "file-manifest": "~0.0.7"
+    "file-manifest": "~0.0.7",
+    "grunt-contrib-clean": "^0.6.0"
   },
   "devDependencies": {
     "coffee-script": "1.7.1",

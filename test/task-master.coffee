@@ -12,6 +12,8 @@ describe 'task-master', ->
         'grunt-foo': 'foo'
         bar: 'bar'
         'grunt-cool-things': 'cool things'
+      dependencies:
+        'grunt-hello-world': 'hello world'
   Given -> @fm.generate = sinon.stub().returns
     foo:
       msg: 'fooness'
@@ -22,13 +24,26 @@ describe 'task-master', ->
   Given -> @grunt =
     loadNpmTasks: sinon.stub()
     initConfig: sinon.stub()
-  When -> @config = @subject @grunt
-  Then -> expect(@grunt.loadNpmTasks).to.have.been.calledWith 'grunt-foo'
-  And -> expect(@grunt.loadNpmTasks).to.have.been.calledWith 'grunt-cool-things'
-  And -> expect(@grunt.initConfig).to.have.been.calledWith
-    foo:
-      msg: 'fooness'
-    bar:
-      msg: 'barness'
-    baz:
-      msg: 'bazness'
+  
+  context 'devDependencies', ->
+    When -> @config = @subject @grunt
+    Then -> expect(@grunt.loadNpmTasks).to.have.been.calledWith 'grunt-foo'
+    And -> expect(@grunt.loadNpmTasks).to.have.been.calledWith 'grunt-cool-things'
+    And -> expect(@grunt.initConfig).to.have.been.calledWith
+      foo:
+        msg: 'fooness'
+      bar:
+        msg: 'barness'
+      baz:
+        msg: 'bazness'
+
+  context 'dependencies', ->
+    When -> @config = @subject @grunt, { production: true }
+    Then -> expect(@grunt.loadNpmTasks).to.have.been.calledWith 'grunt-hello-world'
+    And -> expect(@grunt.initConfig).to.have.been.calledWith
+      foo:
+        msg: 'fooness'
+      bar:
+        msg: 'barness'
+      baz:
+        msg: 'bazness'

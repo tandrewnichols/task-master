@@ -1,9 +1,12 @@
 var fm = require('file-manifest'),
     path = require('path');
 
-module.exports = function(grunt) {
+module.exports = function(grunt, options) {
+  options = options || {};
+  options.production = typeof options.production !== 'undefined' ? options.production : false;
+  options.development = typeof options.development !== 'undefined' ? options.development : true;
 
-  // Try to get the package.json of the project using this module
+  // TODO: Find a better way to get the root
   var root = process.cwd();
   var pkg;
   try {
@@ -12,9 +15,16 @@ module.exports = function(grunt) {
     console.log('Unable to find package.json');
   }
 
-  // Get all npm grunt related modules
-  if (pkg && pkg.devDependencies) {
+  // Get all npm grunt related modules from devDependencies
+  if (pkg && pkg.devDependencies && options.development) {
     for (var dep in pkg.devDependencies) {
+      if (dep.indexOf('grunt-') === 0) grunt.loadNpmTasks(dep);
+    }
+  }
+
+  // Get all npm grunt related modules from dependencies
+  if (pkg && pkg.dependencies && options.production) {
+    for (var dep in pkg.dependencies) {
       if (dep.indexOf('grunt-') === 0) grunt.loadNpmTasks(dep);
     }
   }
