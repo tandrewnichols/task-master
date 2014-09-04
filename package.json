@@ -7,7 +7,7 @@
     "type": "git",
     "url": "git://github.com/tandrewnichols/task-manager.git"
   },
-  "homepage": "https://github.com/tandrewnichols/task-manager",
+  "homepage": "www.tandrewnichols.me/modules/task-master",
   "bugs": {
     "url": "https://github.com/tandrewnichols/task-manager/issues"
   },
@@ -18,8 +18,8 @@
     }
   ],
   "scripts": {
-    "test": "mocha 'test/**/*.coffee'",
-    "watch": "mocha 'test/**/*.coffee' -w -R min --suppress-stack"
+    "test": "grunt",
+    "publish": "if echo $USERNAME | grep -cq 'anichols'; then publisher run; fi"
   },
   "dependencies": {
     "file-manifest": "^1.0.0"
