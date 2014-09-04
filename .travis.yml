@@ -1,6 +1,6 @@
 language: node_js
 before_install:
-  - "export CODECLIMATE_REPO_TOKEN="
+  - "export CODECLIMATE_REPO_TOKEN=476cff19244a1e3f6c75f1b8064bf7909eaec07a28b6120cc865154f9f8dd6c1"
 install:
   - "npm install npm@~1.4.23 -g"
   - "npm install grunt-cli codeclimate-test-reporter -g"
