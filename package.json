@@ -28,7 +28,7 @@
     "caller-id": "^0.1.0",
     "chalk": "^0.5.1",
     "coffee-script": "^1.8.0",
-    "grunt": "git://github.com/gruntjs/grunt.git",
+    "grunt": "^0.4.5",
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-mocha-cov": "^0.3.0",
     "grunt-mocha-test": "^0.11.0",
