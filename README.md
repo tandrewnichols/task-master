@@ -1,4 +1,6 @@
-[![Build Status](https://travis-ci.org/tandrewnichols/task-master.png)](https://travis-ci.org/tandrewnichols/task-master) [![downloads](http://img.shields.io/npm/dm/task-master.svg)](https://npmjs.org/package/task-master) [![npm](http://img.shields.io/npm/v/task-master.svg)](https://npmjs.org/package/task-master) [![Code Climate](https://codeclimate.com/github/tandrewnichols/task-master/badges/gpa.svg)](https://codeclimate.com/github/tandrewnichols/task-master)
+[![Build Status](https://travis-ci.org/tandrewnichols/task-master.png)](https://travis-ci.org/tandrewnichols/task-master) [![downloads](http://img.shields.io/npm/dm/task-master.svg)](https://npmjs.org/package/task-master) [![npm](http://img.shields.io/npm/v/task-master.svg)](https://npmjs.org/package/task-master) [![Code Climate](https://codeclimate.com/github/tandrewnichols/task-master/badges/gpa.svg)](https://codeclimate.com/github/tandrewnichols/task-master) [![Test Coverage](https://codeclimate.com/github/tandrewnichols/task-master/badges/coverage.svg)](https://codeclimate.com/github/tandrewnichols/task-master) [![dependencies](https://david-dm.org/tandrewnichols/task-master.png)](https://david-dm.org/tandrewnichols/task-master)
+
+[![NPM info](https://nodei.co/npm/task-master.png?downloads=true)](https://nodei.co/npm/task-master.png?downloads=true)
 
 # task-master
 
@@ -6,7 +8,7 @@ A helper to make Grunt task declaration and organization cleaner.
 
 ## Installation
 
-`npm install task-master --save`
+`npm install task-master --save-dev`
 
 ## Summary
 
@@ -69,7 +71,7 @@ module.exports = function(grunt) {
 };
 ```
 
-Step 3: Call task-master from your Gruntfile and pass it `grunt`. No need to call `initConfig` or `loadNpmTasks` as task-master does both for you. It will automatically load any plugins specified in package.json under devDependencies that begin with 'grunt-' (as that is the paradigm for publishing grunt tasks).
+Step 3: Call task-master from your Gruntfile and pass it `grunt`. No need to call `initConfig` or `loadNpmTasks` as task-master does both for you. By default, it will automatically load any plugins specified in package.json under devDependencies that begin with 'grunt-', but as of v2.0.0, this is all very customizable. See [options](#options) below.
 
 Gruntfile.js
 
@@ -83,27 +85,52 @@ module.exports = function(grunt) {
 };
 ```
 
-By default task-master reads your devDependencies looking for grunt plugins, but you can make it look it in your regular dependencies as well by passing an optional configuration object.
+## Options
+
+As of v2.0.0, `task-master` accepts a configuration object. The possible values are as follows:
 
 ```javascript
-var taskMaster = require('task-master');
+dependencies: Boolean // include grunt plugins found under production dependencies (default false) - formerly "production"
+devDependencies: Boolean // include grunt plugins found under development dependencies (default true) - formerly "development"
+pattern: String or RegExp // grunt plugin name pattern (default /^grunt-/)
+include: String or Array // specific plugins not matching the plugin pattern to include (default [])
+exclude: String or Array // specific plugins matching the plugin pattern to exclude (default [])
+tasks: String or Array // directories to load plugin tasks from (default 'tasks')
+```
+
+Here's an example:
+
+```javascript
+var tm = require('task-master');
 
 module.exports = function(grunt) {
-  taskMaster(grunt, {
-    production: true, // Look in "dependencies" - default: false
-    development: false // Don't look in "devDependencies" - default: true
+  tm(grunt, {
+    dependencies: true, // load production dependencies
+    devDependencies: false, // don't load development dependencies
+    pattern: /^grunt-contrib-/, // only load grunt-contrib plugins
+    include: ['foo-plugin', 'bar-plugin'], // include these plugins that don't match the pattern
+    exclude: 'grunt-contrib-baz', // exclude this plugin which DOES match the pattern
+    tasks: ['tasks', 'plugins'] // load plugins from multiple directories
   });
+};
+```
+
+If you are only changing which set of dependencies to look at, you can also pass either 'dependencies' or 'devDependencies' as a string (as the second argument) and `task-master` will use that as the only plugin source (i.e. it turns "on" the one you pass in and turns "off" the other one).
+
+```javascript
+var tm = require('task-master');
+
+module.exports = function(grunt) {
+  tm(grunt, 'dependencies');
 };
 ```
 
 ## Running tests
 
-`git clone git@github.com:tandrewnichols/task-master.git`
-
-`cd task-master`
-
-`npm install`
-
-`npm install mocha -g`
-
-`npm test`
+```bash
+git clone git@github.com:tandrewnichols/task-master.git
+cd task-master
+npm install
+npm install grunt-cli mocha -g
+grunt or npm test
+```
