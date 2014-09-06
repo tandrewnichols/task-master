@@ -49,7 +49,7 @@
     "configuration",
     "abstraction"
   ],
-  "main": "./task-master",
+  "main": "./lib/task-master",
   "config": {
     "blanket": {
       "pattern": [
