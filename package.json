@@ -5,16 +5,16 @@
   "author": "Andrew Nichols <tandrewnichols@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "git://github.com/tandrewnichols/task-manager.git"
+    "url": "git://github.com/tandrewnichols/task-master.git"
   },
   "homepage": "http://www.tandrewnichols.me/modules/task-master",
   "bugs": {
-    "url": "https://github.com/tandrewnichols/task-manager/issues"
+    "url": "https://github.com/tandrewnichols/task-master/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/tandrewnichols/task-manager/blob/master/LICENSE"
+      "url": "https://github.com/tandrewnichols/task-master/blob/master/LICENSE"
     }
   ],
   "scripts": {
