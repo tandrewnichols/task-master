@@ -7,5 +7,5 @@ module.exports = {
     newcap: true,
     quotmark: 'single'
   },
-  all: ['lib/**/*.js']
+  all: ['lib/**/*.js', 'cli.js', 'cli/**/*.js', '!cli/Gruntfile.js']
 };

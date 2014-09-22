@@ -12,5 +12,6 @@ exports.toSpacing = function(num) {
   for (var i = 0; i < num; i++) {
     str += ' '; 
   }
+  console.log('string:', str);
   return str;
 };
