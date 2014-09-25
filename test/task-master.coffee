@@ -6,8 +6,8 @@ describe 'task-master', ->
     baz:
       content: 'baz'
       '@noCallThru': true
-    quux: (grunt) ->
-      return 'quux'
+    quux: (grunt, conf) ->
+      return "#{conf.foo} quux"
   Given -> @stubs.quux['@noCallThru'] = true
   Given -> @stubs["#{@root}/package"] =
     devDependencies:
@@ -23,19 +23,35 @@ describe 'task-master', ->
 
   Given -> @subject = sandbox '../lib/task-master', @stubs
   Given -> @fm.generate = sinon.stub()
-  Given -> @fm.generate.withArgs("#{@root}/tasks", { memo: sinon.match.object, reducer: sinon.match.func }).returns
+  Given -> @fm.generate.withArgs("#{@root}/tasks",
+    memo:
+      context: {}
+    patterns: ['**/*.{js,coffee,json,yml}', '!**/_*.*']
+    reducer: sinon.match.func
+  ).returns
+    context: {}
     foo:
       msg: 'fooness'
     bar:
       msg: 'barness'
     baz:
       msg: 'bazness'
-  Given -> @fm.generate.withArgs("#{@root}/toppings", { memo: sinon.match.object, reducer: sinon.match.func }).returns
+  Given -> @fm.generate.withArgs("#{@root}/toppings",
+    memo: sinon.match.object
+    patterns: ['**/*.{js,coffee,json,yml}', '!**/_*.*']
+    reducer: sinon.match.func
+  ).returns
+    context: {}
     hamburger:
       toppings: ['cheese', 'lettuce', 'ketchup']
     pizza:
       toppings: ['pepperoni', 'bacon']
-  Given -> @fm.generate.withArgs("#{@root}/flavors", { memo: sinon.match.object, reducer: sinon.match.func }).returns
+  Given -> @fm.generate.withArgs("#{@root}/flavors",
+    memo: sinon.match.object
+    patterns: ['**/*.{js,coffee,json,yml}', '!**/_*.*']
+    reducer: sinon.match.func
+  ).returns
+    context: {}
     icecream:
       flavor: 'chocolate'
   Given -> @grunt =
@@ -47,6 +63,7 @@ describe 'task-master', ->
     Then -> expect(@grunt.loadNpmTasks).to.have.been.calledWith 'grunt-foo'
     And -> expect(@grunt.loadNpmTasks).to.have.been.calledWith 'grunt-cool-things'
     And -> expect(@grunt.initConfig).to.have.been.calledWith
+      context: {}
       foo:
         msg: 'fooness'
       bar:
@@ -55,12 +72,6 @@ describe 'task-master', ->
         msg: 'bazness'
 
   describe 'with dependencies', ->
-    context 'as a string', ->
-      When -> @subject @grunt, 'dependencies'
-      Then -> expect(@grunt.loadNpmTasks).to.have.been.calledWith 'grunt-hello-world'
-      And -> expect(@grunt.loadNpmTasks.calledWith('grunt-foo')).to.be.false()
-      And -> expect(@grunt.loadNpmTasks.calledWith('grunt-cool-things')).to.be.false()
-
     context 'as an option', ->
       When -> @subject @grunt, { dependencies: true, devDependencies: false }
       Then -> expect(@grunt.loadNpmTasks).to.have.been.calledWith 'grunt-hello-world'
@@ -114,6 +125,7 @@ describe 'task-master', ->
       Then -> expect(@grunt.loadNpmTasks).to.have.been.calledWith 'grunt-foo'
       And -> expect(@grunt.loadNpmTasks).to.have.been.calledWith 'grunt-cool-things'
       And -> expect(@grunt.initConfig).to.have.been.calledWith
+        context: {}
         hamburger:
           toppings: ['cheese', 'lettuce', 'ketchup']
         pizza:
@@ -124,6 +136,7 @@ describe 'task-master', ->
       Then -> expect(@grunt.loadNpmTasks).to.have.been.calledWith 'grunt-foo'
       And -> expect(@grunt.loadNpmTasks).to.have.been.calledWith 'grunt-cool-things'
       And -> expect(@grunt.initConfig).to.have.been.calledWith
+        context: {}
         icecream:
           flavor: 'chocolate'
 
@@ -140,6 +153,47 @@ describe 'task-master', ->
     context 'exports is a function', ->
       When -> @subject @grunt
       And -> @reducer = @fm.generate.getCall(0).args[1].reducer
-      And -> @config = @reducer {}, {}, { fullPath: 'quux', name: 'quux' }
+      And -> @config = @reducer {}, { context: { foo: 'bar' } }, { fullPath: 'quux', name: 'quux' }
       Then -> expect(@config).to.deep.equal
-        quux: 'quux'
+        context:
+          foo: 'bar'
+        quux: 'bar quux'
+
+  describe 'context', ->
+    Given -> @fm.generate.withArgs("#{@root}/tasks",
+      memo:
+        context:
+          hello: 'world'
+          timestamp: 'now'
+      patterns: ['**/*.{js,coffee,json,yml}', '!**/_*.*']
+      reducer: sinon.match.func
+    ).returns
+      context:
+        hello:
+          world: 'yep'
+        timestamp: 'now'
+      foo:
+        msg: 'fooness'
+      bar:
+        msg: 'barness'
+      baz:
+        msg: 'bazness'
+      "<%= hello.world %>": "<%= timestamp %>"
+    When -> @subject @grunt,
+      context:
+        hello: 'world'
+        timestamp: 'now'
+    Then -> expect(@grunt.loadNpmTasks).to.have.been.calledWith 'grunt-foo'
+    And -> expect(@grunt.loadNpmTasks).to.have.been.calledWith 'grunt-cool-things'
+    And -> expect(@grunt.initConfig).to.have.been.calledWith
+      context:
+        hello:
+          world: 'yep'
+        timestamp: 'now'
+      foo:
+        msg: 'fooness'
+      bar:
+        msg: 'barness'
+      baz:
+        msg: 'bazness'
+      yep: 'now'
