@@ -38,21 +38,3 @@ describe 'grunt', ->
     When -> @subject.alias @options, @grunt
     Then -> expect(@grunt.registerTask).to.have.been.calledWith 'foo', ['a', 'b', 'c']
     And -> expect(@grunt.registerTask).to.have.been.calledWith 'bar', ['d:e']
-
-  describe '.init', ->
-    Given -> @grunt = spyObj 'initConfig'
-    Given -> @config =
-      context:
-        foo: 'bar'
-        baz:
-          quux: 'something'
-      hello: 'world'
-      '<%= foo %>': '<%= baz.quux %>'
-    When -> @subject.init @config, @grunt
-    Then -> expect(@grunt.initConfig).to.have.been.calledWith
-      context:
-        foo: 'bar'
-        baz:
-          quux: 'something'
-      hello: 'world'
-      bar: 'something'
