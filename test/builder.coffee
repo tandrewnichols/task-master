@@ -12,13 +12,18 @@ describe 'opts', ->
     Given -> @loader.load.withArgs('opts', @opts, '/root', true).returns
       opts: true
       context: 'foo'
+      alias: 'bar'
     Given -> @loader.load.withArgs('context', 'foo', '/root').returns
       context: true
+    Given -> @loader.load.withArgs('alias', 'bar', '/root').returns
+      alias: true
     When -> @subject.buildOpts '/root', @opts
     Then -> expect(@subject.merge).to.have.been.calledWith
       opts: true
       context:
         context: true
+      alias:
+        alias: true
 
   describe '.merge', ->
     context 'no opts passed in', ->

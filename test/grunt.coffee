@@ -22,6 +22,16 @@ describe 'grunt', ->
       Then -> expect(@grunt.loadNpmTasks).to.have.been.calledWith 'grunt-foo'
       And -> expect(@grunt.loadNpmTasks).to.have.been.calledWith 'grunt-baz'
 
+  describe '.alias', ->
+    Given -> @options =
+      alias:
+        foo: ['a', 'b', 'c']
+        bar: ['d:e']
+    Given -> @grunt = spyObj 'registerTask'
+    When -> @subject.alias @options, @grunt
+    Then -> expect(@grunt.registerTask).to.have.been.calledWith 'foo', ['a', 'b', 'c']
+    And -> expect(@grunt.registerTask).to.have.been.calledWith 'bar', ['d:e']
+
   describe '.init', ->
     Given -> @grunt = spyObj 'initConfig'
     Given -> @config =
