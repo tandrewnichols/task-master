@@ -1,51 +1,24 @@
 describe 'opts', ->
-  Given -> @file = spyObj 'get'
-  Given -> @glob = spyObj 'sync'
+  Given -> @loader = spyObj 'get', 'load'
   Given -> @fm = spyObj 'generate'
   Given -> @subject = sandbox '../lib/builder',
-    './file': @file
-    glob: @glob
+    './file': @loader
     'file-manifest': @fm
 
   describe '.buildOpts', ->
     afterEach -> @subject.merge.restore()
     Given -> sinon.stub @subject, 'merge'
-    context 'opts is an object', ->
-      Given -> @opts =
-        foo: 'bar'
-      When -> @subject.buildOpts '/root', @opts
-      Then -> expect(@subject.merge).to.have.been.calledWith foo: 'bar'
-
-    context 'opts is null', ->
-      context 'canonical opts file does not exist', ->
-        Given -> @glob.sync.withArgs('_taskmaster.opts.{js,coffee,json,yml}', { cwd: '/root/tasks' }).returns []
-        When -> @subject.buildOpts '/root', null
-        Then -> expect(@subject.merge).to.have.been.calledWith {}
-
-      context 'canonical opts file exists', ->
-        Given -> @glob.sync.withArgs('_taskmaster.opts.{js,coffee,json,yml}', { cwd: '/root/tasks' }).returns ['foo.bar']
-        Given -> @file.get.withArgs('foo.bar').returns foo: 'bar'
-        When -> @subject.buildOpts '/root', null
-        Then -> expect(@subject.merge).to.have.been.calledWith foo: 'bar'
-
-    context 'opts is a string', ->
-      context 'returned content is a string', ->
-        Given -> @file.get.withArgs('blah.js').returns 'lorem ibsum etc'
-        When -> @subject.buildOpts '/root', 'blah.js'
-        Then -> expect(@subject.merge).to.have.been.calledWith {}
-
-      context 'returned content is an object', ->
-        Given -> @file.get.withArgs('blah.js').returns foo: 'bar'
-        When -> @subject.buildOpts '/root', 'blah.js'
-        Then -> expect(@subject.merge).to.have.been.calledWith foo: 'bar'
-
-    context 'opts.context is a string', ->
-      Given -> @opts =
-        context: 'blah.js'
-      Given -> @file.get.withArgs('blah.js').returns 'lorem ibsum etc'
-      When -> @subject.buildOpts '/root', @opts
-      Then -> expect(@subject.merge).to.have.been.calledWith
-        context: 'lorem ibsum etc'
+    Given -> @opts = {}
+    Given -> @loader.load.withArgs('opts', @opts, '/root', true).returns
+      opts: true
+      context: 'foo'
+    Given -> @loader.load.withArgs('context', 'foo', '/root').returns
+      context: true
+    When -> @subject.buildOpts '/root', @opts
+    Then -> expect(@subject.merge).to.have.been.calledWith
+      opts: true
+      context:
+        context: true
 
   describe '.merge', ->
     context 'no opts passed in', ->
@@ -125,7 +98,7 @@ describe 'opts', ->
         foo: 'bar'
 
     context 'reduce function', ->
-      Given -> @file.get.withArgs('/root/fruit.js', @grunt, { foo: 'bar' }).returns 'banana'
+      Given -> @loader.get.withArgs('/root/fruit.js', @grunt, { foo: 'bar' }).returns 'banana'
       Given -> @fm.generate.withArgs('/root/foo',
         memo: {}
         patterns: ['**/*.{js,coffee,json,yml}', '!**/_*.*', '!baz.js']
