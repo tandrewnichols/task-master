@@ -32,6 +32,8 @@ describe 'opts', ->
       Then -> expect(@options).to.deep.equal
         devDependencies: true
         dependencies: false
+        optionalDependencies: false
+        peerDependencies: false
         pattern: /^grunt-/
         include: []
         exclude: []
@@ -42,6 +44,8 @@ describe 'opts', ->
       Given -> @opts =
         devDependencies: false
         dependencies: true
+        optionalDependencies: true
+        peerDependencies: true
         pattern: '^foo-'
         include: 'bar'
         exclude: 'baz'
@@ -51,6 +55,8 @@ describe 'opts', ->
       Then -> expect(@options).to.deep.equal
         devDependencies: false
         dependencies: true
+        optionalDependencies: true
+        peerDependencies: true
         pattern: /^foo-/
         include: ['bar']
         exclude: ['baz']
