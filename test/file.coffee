@@ -3,6 +3,8 @@ describe 'file', ->
   Given -> @fs = spyObj 'readFileSync'
   Given -> @mango = -> mango: true
   Given -> @mango['@noCallThru'] = true
+  Given -> @elderberry = (foo) -> elderberry: foo
+  Given -> @elderberry['@noCallThru'] = true
   Given -> @subject = sandbox '../lib/file',
     yamljs: @yaml
     fs: @fs
@@ -16,6 +18,7 @@ describe 'file', ->
       pear: true
       '@noCallThru': true
     'mango.js': @mango
+    'elderberry.js': @elderberry
 
   describe '.get', ->
     context '.js file', ->
@@ -39,6 +42,10 @@ describe 'file', ->
     context 'exports a function', ->
       When -> @content = @subject.get 'mango.js'
       Then -> expect(@content).to.deep.equal mango: true
+
+    context 'exports a function and arguments are provided', ->
+      When -> @content = @subject.get 'elderberry.js', true
+      Then -> expect(@content).to.deep.equal elderberry: true
 
     context '.yml file', ->
       Given -> @yaml.load.withArgs('dragonfruit.yml').returns dragonfruit: true
