@@ -35,7 +35,7 @@
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-mocha-cov": "^0.3.0",
     "grunt-mocha-test": "^0.11.0",
-    "grunt-travis-matrix": "0.0.3",
+    "grunt-travis-matrix": "0.0.4",
     "indeed": "^1.0.6",
     "jshint-stylish": "^0.4.0",
     "mocha": "git://github.com/tandrewnichols/mocha.git#suppress-stack",
