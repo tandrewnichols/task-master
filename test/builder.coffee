@@ -39,6 +39,14 @@ describe 'opts', ->
         When -> @subject.buildOpts '/root', 'blah.js'
         Then -> expect(@subject.merge).to.have.been.calledWith foo: 'bar'
 
+    context 'opts.context is a string', ->
+      Given -> @opts =
+        context: 'blah.js'
+      Given -> @file.get.withArgs('blah.js').returns 'lorem ibsum etc'
+      When -> @subject.buildOpts '/root', @opts
+      Then -> expect(@subject.merge).to.have.been.calledWith
+        context: 'lorem ibsum etc'
+
   describe '.merge', ->
     context 'no opts passed in', ->
       Given -> @opts = {}
@@ -131,7 +139,6 @@ describe 'opts', ->
       ,
         fullPath: '/root/fruit.js'
         name: 'fruit'
-      And -> console.log @newConf
       Then -> expect(@newConf).to.deep.equal
         context:
           foo: 'bar'
