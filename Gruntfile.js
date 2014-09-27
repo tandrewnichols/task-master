@@ -4,12 +4,4 @@
 // similar to what you get when you install task-master and
 // require it.
 var pkg = require('./package');
-var tm = require(pkg.main);
-
-module.exports = function(grunt) {
-  tm(grunt); 
-  grunt.registerTask('mocha', ['mochaTest:test']);
-  grunt.registerTask('default', ['jshint:all', 'mocha']);
-  grunt.registerTask('coverage', ['mochacov:html']);
-  grunt.registerTask('ci', ['jshint:all', 'mocha'/*, 'travis'*/]);
-};
+module.exports = require(pkg.main);

@@ -1,0 +1,4 @@
+"mocha": ["mochaTest:test"]
+"default": ["jshint:all", "mocha"]
+"coverage": ["mochacov:html"]
+"ci": ["jshint:all", "mocha"]
