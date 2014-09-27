@@ -12,13 +12,13 @@ A helper to make Grunt task declaration and organization cleaner.
 
 ## Summary
 
-`grunt.loadTasks` is a nice way to separate out tasks into separate files and keep your Gruntfile from getting hairy, but there's no clean way to do the same with configuration. This module is a (very) small wrapper that allows both tasks and configuration to be abstracted out of your Gruntfile into separate modules.
+`grunt.loadTasks` is a nice way to separate out tasks into separate files and keep your Gruntfile from getting hairy, but there's no clean way to do the same with configuration. This module is a small wrapper that allows both tasks and configuration to be abstracted out of your Gruntfile into separate modules.
 
-**NOTE: This is different than `taskmaster`, which is some sort of task runner written by someone who must not know that grunt exists.**
+**NOTE: This is different than `taskmaster` (without the hyphen), which is some sort of task runner written by someone who must not know that grunt exists.**
 
 ## Usage
 
-Step 1: Define your tasks and configuration in separate files where the name of the file corresponds to the name of the task.
+Step 1: Define your tasks and configuration in separate files where the name of the file corresponds to the name of the task. Task-master can load `.js`, `.coffee`, `.json`, and `.yml`, so specify your configuration in whatever format you prefer. Obviously, however, if you need dynamic functionality, you'll need to use `.js` or `.coffee`.
 
 ```
 tasks
@@ -27,7 +27,7 @@ tasks
   myCustomTask.js
 ```
 
-Step 2: Export either a literal configuration object or a function that accepts `grunt` and returns a configuration object.
+Step 2: Export either a literal configuration object or a function that accepts `grunt` and `context` (more on context below)  and returns a configuration object.
 
 tasks/jshint.js
 
@@ -63,6 +63,9 @@ module.exports = function(grunt) {
   grunt.registerTask('myCustomTask', 'A task that does really neat stuff', function() {
     // The neat stuff...
   });
+  // You probably don't need to return configuration for tasks you write,
+  // but you could use a function in a plugin's task configuration to do
+  // different things based on the environment (for example)
   return {
     options: {
       extraNeatness: true
@@ -71,7 +74,7 @@ module.exports = function(grunt) {
 };
 ```
 
-Step 3: Call task-master from your Gruntfile and pass it `grunt`. No need to call `initConfig` or `loadNpmTasks` as task-master does both for you. By default, it will automatically load any plugins specified in package.json under devDependencies that begin with 'grunt-', but as of v2.0.0, this is all very customizable. See [options](#options) below.
+Step 3: Call task-master from your Gruntfile and pass it `grunt` and an optional options object. No need to call `initConfig` or `loadNpmTasks` as task-master does both for you.
 
 Gruntfile.js
 
@@ -85,45 +88,161 @@ module.exports = function(grunt) {
 };
 ```
 
+If you are not passing any options, you can actually shorten this to:
+
+```javascript
+module.exports = require('task-master');
+```
+
 ## Options
 
-As of v2.0.0, `task-master` accepts a configuration object. The possible values are as follows:
+Task-master is highly configurable. You can pass any of the following options to change the default behavior.
+
+### devDependencies
+
+Indicates whether to load tasks from `devDependencies`. The default is true, and probably 99% of the time, that's what you want. I can't actually think of a time when you wouldn't want this to be true. Even if your grunt plugins are under `dependencies`, having this property set to true probably won't make a difference. But for completeness:
 
 ```javascript
-dependencies: Boolean // include grunt plugins found under production dependencies (default false) - formerly "production"
-devDependencies: Boolean // include grunt plugins found under development dependencies (default true) - formerly "development"
-pattern: String or RegExp // grunt plugin name pattern (default /^grunt-/)
-include: String or Array // specific plugins not matching the plugin pattern to include (default [])
-exclude: String or Array // specific plugins matching the plugin pattern to exclude (default [])
-tasks: String or Array // directories to load plugin tasks from (default 'tasks')
+taskMaster(grunt, { devDependencies: false });
 ```
 
-Here's an example:
+### dependencies
+
+Indicates whether to load tasks from `dependencies`. The default is false. Most of the time you don't need this, but there are some cases where you do, for instance for running builds on a heroku server (which runs `npm install --production` and therefore doesn't have access to `devDependencies`).
 
 ```javascript
-var tm = require('task-master');
+taskMaster(grunt, { dependencies: true });
+```
 
-module.exports = function(grunt) {
-  tm(grunt, {
-    dependencies: true, // load production dependencies
-    devDependencies: false, // don't load development dependencies
-    pattern: /^grunt-contrib-/, // only load grunt-contrib plugins
-    include: ['foo-plugin', 'bar-plugin'], // include these plugins that don't match the pattern
-    exclude: 'grunt-contrib-baz', // exclude this plugin which DOES match the pattern
-    tasks: ['tasks', 'plugins'] // load plugins from multiple directories
-  });
+### peerDependencies
+
+Load tasks from peerDependencies. Probably don't do this unless you have a really good reason.
+
+```javascript
+taskMaster(grunt, { peerDependencies: true });
+```
+
+### optionalDependencies
+
+Load tasks from optionalDependencies. Again, this seems like a bad idea in general. But it's there . . . because if it's not, someone will undoubtedly want it and ask about it.
+
+```javascript
+taskMaster(grunt, { optionalDependencies: true });
+```
+
+### pattern
+
+String or regex pattern for matching grunt plugins. Default is `/^grunt-/`.
+
+```javascript
+taskMaster(grunt, { pattern: /^grunt-contrib-`/ }); // or 'grunt-contrib-'
+```
+
+### include
+
+Tasks to include that don't match the pattern. If you have one or two plugins to load that don't start with "grunt-", it's probably better to specify them here, rather than try to write a custom pattern that will match everything you need. This can be a string plugin name or an array of string plugin names.
+
+```javascript
+taskMaster(grunt, { include: ['not-grunt-foo', 'and-not-grunt-bar'] }); // or for one: { include: 'blah-blah' }
+```
+
+### exclude
+
+Tasks to exclude that _do_ match the pattern. If you want to load all "grunt-" plugins, _except_ grunt-foo-bar, you can do that here. Again, this can be a string plugin name or an array of string plugin names.
+
+```javascript
+taskMaster(grunt, { exclude: ['grunt-foo-bar'] }); // or: { exclude: 'grunt-foo-bar' }
+```
+
+### ignore
+
+Files in the directories from which tasks are loaded that should be ignored. Files that start with `_` are ignored by default, but you can specify other filenames (relative to the the directory tasks are in) to leave out of the config. Again, this can be a string or an array.
+
+```javascript
+taskMaster(grunt, { ignore: 'configuration.json' });
+```
+
+### tasks
+
+Directory or directories to load plugins from. Defaults to \<project_root\>/tasks. This can be a string or list of strings.
+
+```javascript
+taskMaster(grunt, { tasks: 'plugins' });
+```
+
+### context
+
+Context is an object of additional properties that can be passed, which is used in a few places. It's passed to files in task directories that export functions. So if you want to use some configuration in `tasks/foo.js`, you can accept it as the second parameter:
+
+```javascript
+module.exports = function(grunt, context) {
+  // Do stuff with context
 };
 ```
 
-If you are only changing which set of dependencies to look at, you can also pass either 'dependencies' or 'devDependencies' as a string (as the second argument) and `task-master` will use that as the only plugin source (i.e. it turns "on" the one you pass in and turns "off" the other one).
+More importantly, keys under context are added to your grunt config at the top level. So if you, for instance, like having access to your package.json contents in your config, you can pass it under context:
 
 ```javascript
-var tm = require('task-master');
+taskMaster(grunt, { context: { pkg: require('./package') } });
+```
 
-module.exports = function(grunt) {
-  tm(grunt, 'dependencies');
+Then you can use it in your interpolation as normal:
+
+```javascript
+{
+  files: {
+    'dist/<%= pkg.name %>.min.js': './src/main.js'
+  }
+}
+```
+
+This is also useful if you reuse file patterns all over the place. Just add a `files` key under context and access them with:
+
+`<%= files.js.vendor %>`
+
+### alias
+
+An object of aliases to add to grunt, where the key is the alias name and the value is the tasks to run.
+
+```javascript
+taskMaster(grunt, {
+  alias: {
+    default: ['jshint', 'mocha:all'],
+    build: ['clean:dist', 'concat:dist', 'uglify:dist']
+  }
+});
+```
+
+## Loading from files
+
+But the really cool thing about task-master is that you can load some of these options from files by passing a string file path instead of a literal object. You can load the entire options object, the context, or the aliases from a file. For example:
+
+```javascript
+taskMaster(grunt, '_opts.json'); // loads the options object from \<project_root\>/tasks/_opts.json
+```
+
+```javascript
+taskMaster(grunt, { aliases: '_aliases.json' }); // loads aliases from \<project_root\>/tasks/_aliases.json
+```
+
+```javascript
+taskMaster(grunt, { context: '_context.json' }); // loads a context object from \<project_root\>/tasks/_context.json
+```
+
+These files can be `.js`, `.coffee`, `.json`, or `.yaml` files. If they export a function, it will be invoked, which let's you programmatically determine the results. E.g.:
+
+```javascript
+// In an alias file
+module.exports = function() {
+  // Except . . . do something dynamic here
+  return {
+    default: ['jshint', 'mocha:all'],
+    build: ['clean:dist', 'concat:dist', 'uglify:dist']
+  };
 };
 ```
+
+But it gets better. Because I think you shouldn't have to pass a huge configuration object . . . or any configuration object at all . . . you can load content from files automatically if they have specific, canonical names. Just add a `"_taskmaster.opts.{js,coffee,json,yml}"` to your tasks directory (or wherever you load plugins from), and it will automatically be loaded as your options. Add a `"_taskmaster.context.{js,coffee,json,yml}"` for your context and a `"_taskmaster.alias.{js,coffee,json,yml}"` for your aliases.
 
 ## Running tests
 

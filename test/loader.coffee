@@ -1,4 +1,4 @@
-describe 'file', ->
+describe 'loader', ->
   Given -> @yaml = spyObj 'load'
   Given -> @fs = spyObj 'readFileSync'
   Given -> @glob = spyObj 'sync'
@@ -6,7 +6,7 @@ describe 'file', ->
   Given -> @mango['@noCallThru'] = true
   Given -> @elderberry = (foo) -> elderberry: foo
   Given -> @elderberry['@noCallThru'] = true
-  Given -> @subject = sandbox '../lib/file',
+  Given -> @subject = sandbox '../lib/loader',
     glob: @glob
     yamljs: @yaml
     fs: @fs
@@ -41,6 +41,10 @@ describe 'file', ->
         pear: true
         '@noCallThru': true
 
+    context 'file does not exist', ->
+      When -> @content = @subject.get 'serviceberry.coffee'
+      Then -> expect(@content).to.deep.equal {}
+
     context 'exports a function', ->
       When -> @content = @subject.get 'mango.js'
       Then -> expect(@content).to.deep.equal mango: true
@@ -55,43 +59,43 @@ describe 'file', ->
       Then -> expect(@content).to.deep.equal dragonfruit: true
 
     context 'something else', ->
-      Given -> @fs.readFileSync.withArgs('kiwi.opts', 'utf8').returns "<div>kiwi</div>"
+      Given -> @fs.readFileSync.withArgs('kiwi.html', 'utf8').returns "<div>kiwi</div>"
       When -> @content = @subject.get 'kiwi.opts'
-      Then -> expect(@content).to.equal "<div>kiwi</div>"
+      Then -> expect(@content).to.deep.equal {}
 
-  describe '.load', ->
+  describe '.getAll', ->
     afterEach -> @subject.get.restore()
     Given -> sinon.stub @subject, 'get'
+    Given -> @glob.sync.withArgs('1', { cwd: '/root/tasks' }).returns ['foo']
+    Given -> @glob.sync.withArgs('2', { cwd: '/root/tasks' }).returns ['bar', 'baz']
+    Given -> @subject.get.withArgs('foo').returns foo: 1
+    Given -> @subject.get.withArgs('bar').returns bar: 1
+    Given -> @subject.get.withArgs('baz').returns baz: 1
+    When -> @res = @subject.getAll ['1', '2'], '/root', ['tasks']
+    Then -> expect(@res).to.deep.equal
+      foo: 1
+      bar: 1
+      baz: 1
+
+  describe '.load', ->
+    afterEach -> @subject.getAll.restore()
+    Given -> sinon.stub @subject, 'getAll'
     
     context 'value is an object', ->
-      When -> @res = @subject.load 'name', { foo: 'bar' }, '/root'
+      When -> @res = @subject.load 'name', { foo: 'bar' }, '/root', ['tasks']
       Then -> expect(@res).to.deep.equal foo: 'bar'
 
     context 'value is a string', ->
-      context 'disallowString is false', ->
-        Given -> @subject.get.withArgs('blah.js').returns foo: 'bar'
-        When -> @res = @subject.load 'name', 'blah.js', '/root'
-        Then -> expect(@res).to.deep.equal foo: 'bar'
+      Given -> @subject.getAll.withArgs(['blah.js'], '/root', ['tasks']).returns foo: 'bar'
+      When -> @res = @subject.load 'name', 'blah.js', '/root', ['tasks']
+      Then -> expect(@res).to.deep.equal foo: 'bar'
 
-      context 'disallowString is true but result is object', ->
-        Given -> @subject.get.withArgs('blah.js').returns foo: 'bar'
-        When -> @res = @subject.load 'name', 'blah.js', '/root', true
-        Then -> expect(@res).to.deep.equal foo: 'bar'
+    context 'value is an array', ->
+      Given -> @subject.getAll.withArgs(['blah.js'], '/root', ['tasks']).returns foo: 'bar'
+      When -> @res = @subject.load 'name', ['blah.js'], '/root', ['tasks']
+      Then -> expect(@res).to.deep.equal foo: 'bar'
 
-      context 'disallowString is true and result is a string', ->
-        Given -> @subject.get.withArgs('blah.js').returns 'foo'
-        When -> @res = @subject.load 'name', 'blah.js', '/root', true
-        Then -> expect(@res).to.deep.equal {}
-
-    context 'value is falsy', ->
-      context 'canonical file exists', ->
-        Given -> @glob.sync.withArgs('_taskmaster.name.{js,coffee,json,yml}', { cwd: '/root/tasks' }).returns ['blah.js']
-        Given -> @subject.get.withArgs('blah.js').returns foo: 'bar'
-        When -> @res = @subject.load 'name', null, '/root'
-        Then -> expect(@res).to.deep.equal foo: 'bar'
-
-      context 'canonical file does not exist', ->
-        Given -> @glob.sync.withArgs('_taskmaster.name.{js,coffee,json,yml}', { cwd: '/root/tasks' }).returns []
-        Given -> @subject.get.withArgs('blah.js').returns foo: 'bar'
-        When -> @res = @subject.load 'name', null, '/root'
-        Then -> expect(@res).to.deep.equal {}
+    context 'value is empty', ->
+      Given -> @subject.getAll.withArgs('_taskmaster.name.{js,coffee,json,yml}', '/root', ['tasks']).returns 'value'
+      When -> @res = @subject.load 'name', {}, '/root', ['tasks']
+      Then -> expect(@res).to.equal 'value'

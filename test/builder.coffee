@@ -2,20 +2,20 @@ describe 'opts', ->
   Given -> @loader = spyObj 'get', 'load'
   Given -> @fm = spyObj 'generate'
   Given -> @subject = sandbox '../lib/builder',
-    './file': @loader
+    './loader': @loader
     'file-manifest': @fm
 
   describe '.buildOpts', ->
     afterEach -> @subject.merge.restore()
     Given -> sinon.stub @subject, 'merge'
     Given -> @opts = {}
-    Given -> @loader.load.withArgs('opts', @opts, '/root', true).returns
+    Given -> @loader.load.withArgs('opts', @opts, '/root', ['tasks'], true).returns
       opts: true
       context: 'foo'
       alias: 'bar'
-    Given -> @loader.load.withArgs('context', 'foo', '/root').returns
+    Given -> @loader.load.withArgs('context', 'foo', '/root', ['tasks']).returns
       context: true
-    Given -> @loader.load.withArgs('alias', 'bar', '/root').returns
+    Given -> @loader.load.withArgs('alias', 'bar', '/root', ['tasks']).returns
       alias: true
     When -> @subject.buildOpts '/root', @opts
     Then -> expect(@subject.merge).to.have.been.calledWith
@@ -69,8 +69,7 @@ describe 'opts', ->
       Given -> @options =
         tasks: ['foo']
       Given -> @fm.generate.withArgs('/root/foo',
-        memo:
-          context: {}
+        memo: {}
         patterns: ['**/*.{js,coffee,json,yml}', '!**/_*.*']
         reducer: sinon.match.func
       ).returns foo: 'bar'
@@ -85,8 +84,7 @@ describe 'opts', ->
           foo: 'bar'
       Given -> @fm.generate.withArgs('/root/foo',
         memo:
-          context:
-            foo: 'bar'
+          foo: 'bar'
         patterns: ['**/*.{js,coffee,json,yml}', '!**/_*.*']
         reducer: sinon.match.func
       ).returns foo: 'bar'
@@ -99,8 +97,7 @@ describe 'opts', ->
         tasks: ['foo']
         ignore: ['baz.js']
       Given -> @fm.generate.withArgs('/root/foo',
-        memo:
-          context: {}
+        memo: {}
         patterns: ['**/*.{js,coffee,json,yml}', '!**/_*.*', '!baz.js']
         reducer: sinon.match.func
       ).returns foo: 'bar'
@@ -118,12 +115,10 @@ describe 'opts', ->
       When -> @subject.buildConfig '/root', { tasks: ['foo'] }, @grunt
       And -> @func = @fm.generate.getCall(0).args[1].reducer
       And -> @newConf = @func {},
-        context:
-          foo: 'bar'
+        foo: 'bar'
       ,
         fullPath: '/root/fruit.js'
         name: 'fruit'
       Then -> expect(@newConf).to.deep.equal
-        context:
-          foo: 'bar'
+        foo: 'bar'
         fruit: 'banana'
