@@ -82,20 +82,31 @@ describe 'loader', ->
     Given -> sinon.stub @subject, 'getAll'
     
     context 'value is an object', ->
+      Given -> @subject.getAll.withArgs('_taskmaster.name*.{js,coffee,json,yml}', '/root', ['tasks']).returns baz: 'quux'
       When -> @res = @subject.load 'name', { foo: 'bar' }, '/root', ['tasks']
-      Then -> expect(@res).to.deep.equal foo: 'bar'
+      Then -> expect(@res).to.deep.equal
+        foo: 'bar'
+        baz: 'quux'
 
     context 'value is a string', ->
+      Given -> @subject.getAll.withArgs('_taskmaster.name*.{js,coffee,json,yml}', '/root', ['tasks']).returns baz: 'quux'
       Given -> @subject.getAll.withArgs(['blah.js'], '/root', ['tasks']).returns foo: 'bar'
       When -> @res = @subject.load 'name', 'blah.js', '/root', ['tasks']
-      Then -> expect(@res).to.deep.equal foo: 'bar'
+      Then -> expect(@res).to.deep.equal
+        foo: 'bar'
+        baz: 'quux'
 
     context 'value is an array', ->
+      Given -> @subject.getAll.withArgs('_taskmaster.name*.{js,coffee,json,yml}', '/root', ['tasks']).returns baz: 'quux'
       Given -> @subject.getAll.withArgs(['blah.js'], '/root', ['tasks']).returns foo: 'bar'
       When -> @res = @subject.load 'name', ['blah.js'], '/root', ['tasks']
-      Then -> expect(@res).to.deep.equal foo: 'bar'
+      Then -> expect(@res).to.deep.equal
+        foo: 'bar'
+        baz: 'quux'
 
-    context 'value is empty', ->
-      Given -> @subject.getAll.withArgs('_taskmaster.name.{js,coffee,json,yml}', '/root', ['tasks']).returns 'value'
-      When -> @res = @subject.load 'name', {}, '/root', ['tasks']
-      Then -> expect(@res).to.equal 'value'
+    context 'non-canonical files take precedence', ->
+      Given -> @subject.getAll.withArgs('_taskmaster.name*.{js,coffee,json,yml}', '/root', ['tasks']).returns foo: 'Zippy ate a banana'
+      Given -> @subject.getAll.withArgs(['blah.js'], '/root', ['tasks']).returns foo: 'Toto ate grass in the backyard'
+      When -> @res = @subject.load 'name', 'blah.js', '/root', ['tasks']
+      Then -> expect(@res).to.deep.equal
+        foo: 'Toto ate grass in the backyard'

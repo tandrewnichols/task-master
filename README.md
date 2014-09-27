@@ -18,7 +18,7 @@ A helper to make Grunt task declaration and organization cleaner.
 
 ## Usage
 
-Step 1: Define your tasks and configuration in separate files where the name of the file corresponds to the name of the task. Task-master can load `.js`, `.coffee`, `.json`, and `.yml`, so specify your configuration in whatever format you prefer. Obviously, however, if you need dynamic functionality, you'll need to use `.js` or `.coffee`.
+Step 1: Define your tasks and configuration in separate files where the name of the file corresponds to the name of the task. (Task-master can load `.js`, `.coffee`, `.json`, and `.yml`, so specify your configuration in whatever format you prefer. Obviously, however, if you need dynamic functionality, you'll need to use `.js` or `.coffee`.)
 
 ```
 tasks
@@ -140,7 +140,7 @@ taskMaster(grunt, { pattern: /^grunt-contrib-`/ }); // or 'grunt-contrib-'
 
 ### include
 
-Tasks to include that don't match the pattern. If you have one or two plugins to load that don't start with "grunt-", it's probably better to specify them here, rather than try to write a custom pattern that will match everything you need. This can be a string plugin name or an array of string plugin names.
+Tasks to include that don't match the pattern. If you have one or two plugins to load that don't start with "grunt-" (do such plugins exist?), it's probably better to specify them here, rather than try to write a custom pattern that will match everything you need. This can be a string plugin name or an array of string plugin names.
 
 ```javascript
 taskMaster(grunt, { include: ['not-grunt-foo', 'and-not-grunt-bar'] }); // or for one: { include: 'blah-blah' }
@@ -156,7 +156,7 @@ taskMaster(grunt, { exclude: ['grunt-foo-bar'] }); // or: { exclude: 'grunt-foo-
 
 ### ignore
 
-Files in the directories from which tasks are loaded that should be ignored. Files that start with `_` are ignored by default, but you can specify other filenames (relative to the the directory tasks are in) to leave out of the config. Again, this can be a string or an array.
+Files in the directories from which tasks are loaded that should be ignored. Files that start with `_` are ignored by default, but you can specify other filenames (relative to the directory tasks are in) to leave out of the config. Again, this can be a string or an array.
 
 ```javascript
 taskMaster(grunt, { ignore: 'configuration.json' });
@@ -215,18 +215,23 @@ taskMaster(grunt, {
 
 ## Loading from files
 
-But the really cool thing about task-master is that you can load some of these options from files by passing a string file path instead of a literal object. You can load the entire options object, the context, or the aliases from a file. For example:
+But the really cool thing about task-master is that you can load some of these options from files by passing a string file path (or a list of string file paths) instead of a literal object. You can even pass globstar patterns. You can load the entire options object, the context, or the aliases from a file. The following examples assume you are using the default tasks directory:
 
 ```javascript
-taskMaster(grunt, '_opts.json'); // loads the options object from \<project_root\>/tasks/_opts.json
+// loads the options object from \<project_root\>/tasks/_opts.json
+taskMaster(grunt, '_opts.json');
 ```
 
 ```javascript
-taskMaster(grunt, { aliases: '_aliases.json' }); // loads aliases from \<project_root\>/tasks/_aliases.json
+// loads aliases from \<project_root\>/tasks/_aliases.json AND \<project_root\>/tasks/_alias.js
+taskMaster(grunt, { aliases: ['_aliases.json', '_alias.json'] });
 ```
 
 ```javascript
-taskMaster(grunt, { context: '_context.json' }); // loads a context object from \<project_root\>/tasks/_context.json
+// loads a context object from \<project_root\>/tasks/_context.json
+// and any files in \<project_root\>/tasks that start with "_context."
+// and end with ".json"
+taskMaster(grunt, { context: ['_context.json', '_context.*.json'] });
 ```
 
 These files can be `.js`, `.coffee`, `.json`, or `.yaml` files. If they export a function, it will be invoked, which let's you programmatically determine the results. E.g.:
@@ -242,7 +247,29 @@ module.exports = function() {
 };
 ```
 
-But it gets better. Because I think you shouldn't have to pass a huge configuration object . . . or any configuration object at all . . . you can load content from files automatically if they have specific, canonical names. Just add a `"_taskmaster.opts.{js,coffee,json,yml}"` to your tasks directory (or wherever you load plugins from), and it will automatically be loaded as your options. Add a `"_taskmaster.context.{js,coffee,json,yml}"` for your context and a `"_taskmaster.alias.{js,coffee,json,yml}"` for your aliases.
+The results of these files will be merged into a single object.
+
+But it gets even better. Because I think you shouldn't have to pass a huge messy configuration object (that's exactly what this library is trying to _undo_) you can load content from files automatically if they have specific, canonical names. Just add a `"_taskmaster.opts*.{js,coffee,json,yml}"` to your tasks directory (or wherever you load plugins from), and it will automatically be loaded as your options. Add a `"_taskmaster.context*.{js,coffee,json,yml}"` for your context and a `"_taskmaster.alias*.{js,coffee,json,yml}"` for your aliases. And see that star hiding in the middle there? That means you can even create multiple canonical files as long as they match that pattern.
+
+Why would you want to load configuration from multiple files you ask? I'm envisioning a team scenario where some members of the team might want to (for example) define their own task aliases that aren't part of the normal aliases. So you have a `_taskmaster.alias.json` file for all the common aliases, and then pop this in your `.gitignore`:
+
+`tasks/_aliases.json`
+
+Now each member can add their own aliases without interfering with other members. Don't like typing `grunt mochaTest`, which is the task name in the main aliases file? Just add a `tasks/_aliases.json` that looks like this:
+
+```javascript
+var grunt = require('grunt');
+
+module.exports = function() {
+  grunt.renameTask('mochaTest', 'mocha');
+  return {
+    test: ['mocha'],
+    w: ['build', 'doStuff', 'mocha', 'watch']
+  };
+};
+```
+
+You can add your own short hand aliases or combinations of tasks for testing purposes. In truth, I'm sure I haven't fathomed all the possible uses of this feature, but I could think of at least one use that would make it worth it to me, which means all of you will probably find a hundred more. I always try to err on the side of more flexible configuration whenever possible.
 
 ## Running tests
 
