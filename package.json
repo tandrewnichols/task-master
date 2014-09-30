@@ -22,7 +22,7 @@
     "publish": "if echo $USERNAME | grep -cq 'anichols'; then publisher run; fi"
   },
   "dependencies": {
-    "file-manifest": "^1.0.0",
+    "file-manifest": "^1.0.2",
     "glob": "^4.0.6",
     "lodash": "^2.4.1",
     "yamljs": "^0.2.0"
