@@ -22,7 +22,7 @@
     "publish": "if echo $USERNAME | grep -cq 'anichols'; then publisher run; fi"
   },
   "dependencies": {
-    "file-manifest": "^1.0.2",
+    "file-manifest": "^1.0.3",
     "glob": "^4.0.6",
     "lodash": "^2.4.1",
     "yamljs": "^0.2.0"
@@ -31,6 +31,7 @@
     "caller-id": "^0.1.0",
     "chalk": "^0.5.1",
     "coffee-script": "^1.8.0",
+    "fs-extra": "^0.12.0",
     "grunt": "^0.4.5",
     "grunt-contrib-jshint": "^0.10.0",
     "grunt-mocha-cov": "^0.3.0",
@@ -38,7 +39,7 @@
     "grunt-travis-matrix": "0.0.4",
     "indeed": "^1.0.6",
     "jshint-stylish": "^0.4.0",
-    "mocha": "git://github.com/tandrewnichols/mocha.git#suppress-stack",
+    "mocha": "^1.21.4",
     "mocha-given": "git://github.com/tandrewnichols/mocha-given.git",
     "mocha-lcov-reporter": "0.0.1",
     "proxyquire": "^1.0.1",
