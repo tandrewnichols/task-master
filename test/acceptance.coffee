@@ -1,22 +1,11 @@
-fs = require('fs-extra')
-child = require('child_process')
-
-cp = (file, cb) ->
-  fs.copy "#{__dirname}/fixtures/#{file}.js", "#{__dirname}/Gruntfile.js", (err) ->
-    if err
-      cb err
-    else
-      fs.copy "#{__dirname}/fixtures/#{file}", "#{__dirname}/tasks", cb
+child = require 'child_process'
 
 describe.only 'acceptance', ->
-  afterEach (done) -> fs.remove "#{__dirname}/Gruntfile.js", done
-  afterEach (done) -> fs.remove "#{__dirname}/tasks", done
   Given -> @output = ''
 
-  context 'no options', ->
-    Given (done) -> cp "no-opts", done
+  context 'task function', ->
     When (done) ->
-      grunt = child.spawn 'grunt', ['foo'], { cwd: __dirname }
+      grunt = child.spawn 'grunt', ['foo'], { cwd: "#{__dirname}/fixtures/defaults" }
       grunt.stdout.on 'data', (output) =>
         @output += output.toString()
       grunt.on 'close', done
