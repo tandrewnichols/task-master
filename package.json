@@ -24,6 +24,7 @@
   "dependencies": {
     "file-manifest": "^1.0.3",
     "glob": "^4.0.6",
+    "jit-grunt": "^0.8.0",
     "lodash": "^2.4.1",
     "yamljs": "^0.2.0"
   },
