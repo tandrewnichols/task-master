@@ -22,15 +22,16 @@
     "publish": "if echo $USERNAME | grep -cq 'anichols'; then publisher run; fi"
   },
   "dependencies": {
+    "config-extend": "0.0.7",
     "file-manifest": "^1.0.3",
     "glob": "^4.0.6",
     "jit-grunt": "^0.8.0",
     "lodash": "^2.4.1",
+    "safe-obj": "^1.0.2",
     "yamljs": "^0.2.0"
   },
   "devDependencies": {
     "caller-id": "^0.1.0",
-    "chalk": "^0.5.1",
     "coffee-script": "^1.8.0",
     "grunt": "^0.4.5",
     "grunt-contrib-jshint": "^0.10.0",
