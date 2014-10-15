@@ -74,6 +74,23 @@ module.exports = function(grunt) {
 };
 ```
 
+Additionally, as of version 2.2.0, you can even define target-specific configuration files in the form `tasks/<task>.<target>.{js,json,coffee,yml}`. If, for example, you have a really big `copy` task, you could break it out into target-specific files like `tasks/copy.dev.js` and `tasks/copy.dist.js`, which will result in a configuration object that looks like:
+
+```javascript
+{
+  copy: {
+    dev: {
+      // exports of copy.dev.js
+    },
+    dist: {
+      // exports of copy.dist.js
+    }
+  }
+}
+```
+
+Incidentally, this will also work with task-level options, if you define (e.g.) a `tasks/copy.options.js.`
+
 Step 3: Call task-master from your Gruntfile and pass it `grunt` and an optional options object. No need to call `initConfig` or `loadNpmTasks` as task-master does both for you.
 
 Gruntfile.js
@@ -213,6 +230,19 @@ taskMaster(grunt, {
 });
 ```
 
+### jit
+
+As of version 2.2.0, `task-master` will delegate to `jit-grunt` for loading npm grunt plugins (which incidentally makes the "dependency" options above unnecessary, since `jit-grunt` loads from `node_modules` regardless of where in the package a dependency is defined), which can significantly speed up your build time. If you don't want to use `jit-grunt`, you can pass `jit: false`, and `task-master` will load in the way it did prior to 2.2.0. But there's basically no reason you should want to do this. Alternatively, you can pass jit as an object, and that object will be passed into `jit-grunt` as the [static-mappings](https://github.com/shootaroo/jit-grunt#static-mappings). So you can do something like this:
+
+```javascript
+taskMaster(grunt, {
+  jit: {
+    ngtemplates: 'grunt-angular-templates',
+    spec: 'grunt-jasmine-bundle'
+  }
+});
+```
+
 ## Loading from files
 
 But the really cool thing about task-master is that you can load some of these options from files by passing a string file path (or a list of string file paths) instead of a literal object. You can even pass globstar patterns. You can load the entire options object, the context, or the aliases from a file. The following examples assume you are using the default tasks directory:
@@ -269,7 +299,15 @@ module.exports = function() {
 };
 ```
 
-You can add your own short hand aliases or combinations of tasks for testing purposes. In truth, I'm sure I haven't fathomed all the possible uses of this feature, but I could think of at least one use that would make it worth it to me, which means all of you will probably find a hundred more. I always try to err on the side of more flexible configuration whenever possible.
+You can add your own short hand aliases or combinations of tasks for testing purposes.
+
+## Overrides
+
+As an extension of the alias overriding above, you can override task configuration by create `_taskmaster.override.<task>.{js,json,coffee,yml}` files. For instance, if you have a `tasks/copy.js`, you can add a `_taskmaster.override.copy.js` and the override exports will be merged into the regular configuration, with the overrides taking precedence. This feature is primarily for teams, so that you can add `tasks/_taskmaster.override.*` to your `.gitignore` and then setup developer-specific configuration that doesn't have to be shared by the team.
+
+## A Note on Context
+
+The canonical context file path is included for completeness and uniformity, but astute readers will note that it is not actually necessary, since `task-master` merges files in with the filename as a property at the top level of the grunt config. This means that creating a `tasks/files.js` will have the same effect as creating a `_taskmaster.context.js` file that exports a `files` object. Which you choose will mostly depend on taste and whether you like breaking things up into smaller files or keeping everything of the same type together.
 
 ## Running tests
 
