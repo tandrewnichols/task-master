@@ -4,4 +4,11 @@
 // similar to what you get when you install task-master and
 // require it.
 var pkg = require('./package');
-module.exports = require(pkg.main);
+var taskMaster = require(pkg.main);
+module.exports = function(grunt) {
+  taskMaster(grunt, {
+    jit: {
+      mochacov: 'grunt-mocha-cov'
+    }
+  });
+};

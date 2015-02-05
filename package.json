@@ -18,8 +18,7 @@
     }
   ],
   "scripts": {
-    "test": "grunt",
-    "publish": "if echo $USERNAME | grep -cq 'anichols'; then publisher run; fi"
+    "test": "grunt"
   },
   "dependencies": {
     "config-extend": "0.0.7",
