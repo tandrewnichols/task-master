@@ -2,12 +2,15 @@
   "name": "task-master",
   "description": "A helper to make Grunt task declaration and organization cleaner.",
   "version": "2.2.0",
-  "author": "Andrew Nichols <tandrewnichols@gmail.com>",
+  "author": {
+    "name": "Andrew Nichols",
+    "email": "tandrewnichols@gmail.com",
+    "url": "http://www.tandrewnichols.me"
+  },
   "repository": {
     "type": "git",
     "url": "git://github.com/tandrewnichols/task-master.git"
   },
-  "homepage": "http://www.tandrewnichols.me/modules/task-master",
   "bugs": {
     "url": "https://github.com/tandrewnichols/task-master/issues"
   },
