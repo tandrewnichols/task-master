@@ -34,7 +34,7 @@ describe 'loader', ->
         pear: true
 
     context 'file does not exist', ->
-      Then -> expect(=> @subject.get 'serviceberry.coffee').to.throw("Cannot find module 'serviceberry.coffee'")
+      Then -> expect(=> @subject.get('serviceberry.coffee')).to.throw "Cannot find module 'serviceberry.coffee'"
 
     context 'exports a function', ->
       When -> @content = @subject.get 'mango.js'
