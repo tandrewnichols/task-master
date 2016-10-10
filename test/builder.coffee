@@ -1,4 +1,4 @@
-describe 'opts', ->
+describe 'builder', ->
   Given -> @loader = spyObj 'get', 'load'
   Given -> @fm = spyObj 'generate'
   Given -> @subject = sandbox '../lib/builder',
@@ -70,8 +70,8 @@ describe 'opts', ->
         tasks: ['foo']
       Given -> @fm.generate.withArgs('/root/foo',
         memo: {}
-        patterns: ['**/*.{js,coffee,json,yml}', '!**/_*.*']
-        reducer: sinon.match.func
+        match: ['**/*.{js,coffee,json,yml}', '!**/_*.*']
+        reduce: sinon.match.func
       ).returns foo: 'bar'
       When -> @config = @subject.buildConfig '/root', @options, @grunt
       Then -> expect(@config).to.deep.equal
@@ -86,8 +86,8 @@ describe 'opts', ->
       Given -> @fm.generate.withArgs('/root/foo',
         memo:
           foo: 'bar'
-        patterns: ['**/*.{js,coffee,json,yml}', '!**/_*.*']
-        reducer: sinon.match.func
+        match: ['**/*.{js,coffee,json,yml}', '!**/_*.*']
+        reduce: sinon.match.func
       ).returns foo: 'bar'
       When -> @config = @subject.buildConfig '/root', @options, @grunt
       Then -> expect(@config).to.deep.equal
@@ -99,8 +99,8 @@ describe 'opts', ->
         ignore: ['baz.js']
       Given -> @fm.generate.withArgs('/root/foo',
         memo: {}
-        patterns: ['**/*.{js,coffee,json,yml}', '!**/_*.*', '!baz.js']
-        reducer: sinon.match.func
+        match: ['**/*.{js,coffee,json,yml}', '!**/_*.*', '!baz.js']
+        reduce: sinon.match.func
       ).returns foo: 'bar'
       When -> @config = @subject.buildConfig '/root', @options, @grunt
       Then -> expect(@config).to.deep.equal
@@ -112,16 +112,16 @@ describe 'opts', ->
         Given -> @loader.load.withArgs('override.fruit', null, '/root', ['foo']).returns {}
         Given -> @fm.generate.withArgs('/root/foo',
           memo: {}
-          patterns: ['**/*.{js,coffee,json,yml}', '!**/_*.*', '!baz.js']
-          reducer: sinon.match.func
+          match: ['**/*.{js,coffee,json,yml}', '!**/_*.*', '!baz.js']
+          reduce: sinon.match.func
         ).returns foo: 'bar'
         When -> @subject.buildConfig '/root', { tasks: ['foo'] }, @grunt
-        And -> @func = @fm.generate.getCall(0).args[1].reducer
-        And -> @newConf = @func {},
+        And -> @func = @fm.generate.getCall(0).args[1].reduce
+        And -> @newConf = @func
           foo: 'bar'
         ,
-          fullPath: '/root/fruit.js'
-          name: 'fruit'
+          abs: -> '/root/fruit.js'
+          name: -> 'fruit'
         Then -> expect(@newConf).to.deep.equal
           foo: 'bar'
           fruit: 'banana'
@@ -131,16 +131,16 @@ describe 'opts', ->
         Given -> @loader.load.withArgs('override.fruit', null, '/root', ['foo']).returns 'apple'
         Given -> @fm.generate.withArgs('/root/foo',
           memo: {}
-          patterns: ['**/*.{js,coffee,json,yml}', '!**/_*.*', '!baz.js']
-          reducer: sinon.match.func
+          match: ['**/*.{js,coffee,json,yml}', '!**/_*.*', '!baz.js']
+          reduce: sinon.match.func
         ).returns foo: 'bar'
         When -> @subject.buildConfig '/root', { tasks: ['foo'] }, @grunt
-        And -> @func = @fm.generate.getCall(0).args[1].reducer
-        And -> @newConf = @func {},
+        And -> @func = @fm.generate.getCall(0).args[1].reduce
+        And -> @newConf = @func
           foo: 'bar'
         ,
-          fullPath: '/root/fruit.js'
-          name: 'fruit'
+          abs: -> '/root/fruit.js'
+          name: -> 'fruit'
         Then -> expect(@newConf).to.deep.equal
           foo: 'bar'
           fruit: 'apple'
@@ -150,16 +150,16 @@ describe 'opts', ->
         Given -> @loader.load.withArgs('override.fruit.banana', null, '/root', ['foo']).returns {}
         Given -> @fm.generate.withArgs('/root/foo',
           memo: {}
-          patterns: ['**/*.{js,coffee,json,yml}', '!**/_*.*', '!baz.js']
-          reducer: sinon.match.func
+          match: ['**/*.{js,coffee,json,yml}', '!**/_*.*', '!baz.js']
+          reduce: sinon.match.func
         ).returns foo: 'bar'
         When -> @subject.buildConfig '/root', { tasks: ['foo'] }, @grunt
-        And -> @func = @fm.generate.getCall(0).args[1].reducer
-        And -> @newConf = @func {},
+        And -> @func = @fm.generate.getCall(0).args[1].reduce
+        And -> @newConf = @func
           foo: 'bar'
         ,
-          fullPath: '/root/fruit.banana.js'
-          name: 'fruit.banana'
+          abs: -> '/root/fruit.banana.js'
+          name: -> 'fruit.banana'
         Then -> expect(@newConf).to.deep.equal
           foo: 'bar'
           fruit:
@@ -176,18 +176,17 @@ describe 'opts', ->
         Given -> @loader.load.withArgs('override.fruit', null, '/root', ['foo']).returns {}
         Given -> @fm.generate.withArgs('/root/foo',
           memo: {}
-          patterns: ['**/*.{js,coffee,json,yml}', '!**/_*.*', '!baz.js']
-          reducer: sinon.match.func
+          match: ['**/*.{js,coffee,json,yml}', '!**/_*.*', '!baz.js']
+          reduce: sinon.match.func
         ).returns foo: 'bar'
         When -> @subject.buildConfig '/root', { tasks: ['foo'] }, @grunt
-        And -> @func = @fm.generate.getCall(0).args[1].reducer
-        And -> @newConf = @func {}, {},
-          fullPath: '/root/fruit.banana.js'
-          name: 'fruit.banana'
-        And -> console.log @newConf
-        And -> @newerConf = @func {}, @newConf,
-          fullPath: '/root/fruit.js'
-          name: 'fruit'
+        And -> @func = @fm.generate.getCall(0).args[1].reduce
+        And -> @newConf = @func {},
+          abs: -> '/root/fruit.banana.js'
+          name: -> 'fruit.banana'
+        And -> @newerConf = @func @newConf,
+          abs: -> '/root/fruit.js'
+          name: -> 'fruit'
         Then -> expect(@newerConf).to.deep.equal
           fruit:
             banana: 'yellow'

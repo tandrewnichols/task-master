@@ -8,7 +8,7 @@ var taskMaster = require(pkg.main);
 module.exports = function(grunt) {
   taskMaster(grunt, {
     jit: {
-      mochacov: 'grunt-mocha-cov'
+      istanbul: 'grunt-simple-istanbul'
     }
   });
 };

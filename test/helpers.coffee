@@ -1,6 +1,6 @@
 global.sinon = require 'sinon'
 global.expect = require('indeed').expect
-global.sandbox = require 'proxyquire'
+global.sandbox = require('proxyquire').noCallThru()
 _ = require 'lodash'
 
 global.spyObj = (fns...) ->

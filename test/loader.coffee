@@ -3,22 +3,17 @@ describe 'loader', ->
   Given -> @fs = spyObj 'readFileSync'
   Given -> @glob = spyObj 'sync'
   Given -> @mango = -> mango: true
-  Given -> @mango['@noCallThru'] = true
   Given -> @elderberry = (foo) -> elderberry: foo
-  Given -> @elderberry['@noCallThru'] = true
   Given -> @subject = sandbox '../lib/loader',
     glob: @glob
     yamljs: @yaml
     fs: @fs
     'banana.js':
       banana: true
-      '@noCallThru': true
     'apple.coffee':
       apple: true
-      '@noCallThru': true
     'pear.json':
       pear: true
-      '@noCallThru': true
     'mango.js': @mango
     'elderberry.js': @elderberry
 
@@ -27,23 +22,19 @@ describe 'loader', ->
       When -> @content = @subject.get 'banana.js'
       Then -> expect(@content).to.deep.equal
         banana: true
-        '@noCallThru': true
 
     context '.coffee file', ->
       When -> @content = @subject.get 'apple.coffee'
       Then -> expect(@content).to.deep.equal
         apple: true
-        '@noCallThru': true
 
     context '.json file', ->
       When -> @content = @subject.get 'pear.json'
       Then -> expect(@content).to.deep.equal
         pear: true
-        '@noCallThru': true
 
     context 'file does not exist', ->
-      When -> @content = @subject.get 'serviceberry.coffee'
-      Then -> expect(@content).to.deep.equal {}
+      Then -> expect(=> @subject.get('serviceberry.coffee')).to.throw "Cannot find module 'serviceberry.coffee'"
 
     context 'exports a function', ->
       When -> @content = @subject.get 'mango.js'
